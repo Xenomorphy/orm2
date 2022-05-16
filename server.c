@@ -1,3 +1,6 @@
+//EDITED BY G1 - GRUPA 33
+//
+//
 //===================================================== file = mserver.c =====
 //=  A multicast server to send multicast datagrams                          =
 //============================================================================
@@ -12,7 +15,7 @@
 //=--------------------------------------------------------------------------=
 //=  History:  JNS (07/11/02) - Genesis                                      =
 //============================================================================
-#define  WIN                // WIN for Winsock and BSD for BSD sockets
+#define BSD                 // WIN for Winsock and BSD for BSD sockets
 
 //----- Include files -------------------------------------------------------
 #include <stdio.h>          // Needed for printf()
@@ -34,8 +37,14 @@
 #define GROUP_ADDR "225.1.1.1"            // Address of the multicast group
 
 //===== Main program ========================================================
-void main(void)
+void main(int argc, char** argv)
 {
+  if(argc != 2)
+  {
+    printf("INCORRECT INPUT\nPLEASE USE: ./server <id>");
+    exit(1);
+  }
+
 #ifdef WIN
   WORD wVersionRequested = MAKEWORD(1,1);       // Stuff for WSA functions
   WSADATA wsaData;                              // Stuff for WSA functions
@@ -57,7 +66,7 @@ void main(void)
 #endif
 
   // Create a multicast socket
-  multi_server_sock=socket(AF_INET, SOCK_DGRAM,0);
+  multi_server_sock = socket(AF_INET, SOCK_DGRAM, 0);
 
   // Create multicast group address information
   addr_dest.sin_family = AF_INET;
@@ -66,8 +75,7 @@ void main(void)
 
   // Set the TTL for the sends using a setsockopt()
   TTL = 1;
-  retcode = setsockopt(multi_server_sock, IPPROTO_IP, IP_MULTICAST_TTL,
-                       (char *)&TTL, sizeof(TTL));
+  retcode = setsockopt(multi_server_sock, IPPROTO_IP, IP_MULTICAST_TTL, (char *)&TTL, sizeof(TTL));
   if (retcode < 0)
   {
     printf("*** ERROR - setsockopt() failed with retcode = %d \n", retcode);
@@ -79,19 +87,21 @@ void main(void)
 
   // Multicast the message forever with a period of 1 second
   count = 0;
-  printf("*** Sending multicast datagrams to '%s' (port = %d) \n",
-    GROUP_ADDR, PORT_NUM);
+  printf("*** Sending multicast datagrams to '%s' (port = %d) \n", GROUP_ADDR, PORT_NUM);
+
+  int id = atoi(argv[1]);
+
   while(1)
   {
     // Increment loop count
     count++;
 
     // Build the message in the buffer
-    sprintf(buffer,"Hello Multicast Group - this is message #%d", count);
+    sprintf(buffer, "CONNECT %d | FOR %d", id, count);
 
     // Send buffer as a datagram to the multicast group
-    sendto(multi_server_sock, buffer, sizeof(buffer), 0,
-           (struct sockaddr*)&addr_dest, addr_len);
+    sendto(multi_server_sock, buffer, sizeof(buffer), 0, (struct sockaddr*)&addr_dest, addr_len);
+
 #ifdef WIN
     Sleep(1000);
 #endif
