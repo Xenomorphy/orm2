@@ -44,7 +44,7 @@
 
 #define HEADER "|--------------------------------------|\n|--            --DEVICES--           --|\n|--------------------------------------|\n"
 
-#define TTL_C 5
+#define TTL_C 2
 
 #define BUFF_LEN 256
 #define MAX_DEVICES 64
