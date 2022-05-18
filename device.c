@@ -20,6 +20,7 @@
 //----- Include files -------------------------------------------------------
 #include <stdio.h>          // Needed for printf()
 #include <stdlib.h>         // Needed for memcpy() and itoa()
+#include <string.h>
 #ifdef WIN
   #include <winsock.h>      // Needed for all Windows stuff
 #endif
@@ -36,12 +37,14 @@
 #define PORT_NUM         4444             // Port number used
 #define GROUP_ADDR "225.1.1.1"            // Address of the multicast group
 
+#define BUFF_LEN 256
+
 //===== Main program ========================================================
 void main(int argc, char** argv)
 {
-  if(argc != 2)
+  if(argc != 3)
   {
-    printf("INCORRECT INPUT\nPLEASE USE: ./server <id>");
+    printf("INCORRECT INPUT\nPLEASE USE: ./server <type> <id>");
     exit(1);
   }
 
@@ -56,7 +59,7 @@ void main(int argc, char** argv)
   unsigned char        TTL;                     // TTL for multicast packets
   struct in_addr       recv_ip_addr;            // Receive IP address
   unsigned int         addr_len;                // Internet address length
-  unsigned char        buffer[256];             // Datagram buffer
+  char                 buffer[BUFF_LEN];             // Datagram buffer
   int                  count;                   // Loop counter
   int                  retcode;                 // Return code
 
@@ -89,24 +92,23 @@ void main(int argc, char** argv)
   count = 0;
   printf("*** Sending multicast datagrams to '%s' (port = %d) \n", GROUP_ADDR, PORT_NUM);
 
-  int id = atoi(argv[1]);
+  char type[BUFF_LEN/2];
+  sprintf(type, "%s", argv[1]);
+  int id = atoi(argv[2]);
 
   while(1)
   {
-    // Increment loop count
-    count++;
-
     // Build the message in the buffer
-    sprintf(buffer, "CONNECT %d | FOR %d", id, count);
+    sprintf(buffer, "%d %s", id, type);
 
     // Send buffer as a datagram to the multicast group
     sendto(multi_server_sock, buffer, sizeof(buffer), 0, (struct sockaddr*)&addr_dest, addr_len);
 
 #ifdef WIN
-    Sleep(1000);
+    Sleep(200);
 #endif
 #ifdef BSD
-    sleep(1);
+    usleep(200000);
 #endif
   }
 
