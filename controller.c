@@ -1,4 +1,4 @@
-//EDITED BY G1 - GRUPA 33
+//Mane, Mina, Anastasija
 //
 //
 //===================================================== file = mclient.c =====
