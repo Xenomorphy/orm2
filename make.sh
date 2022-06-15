@@ -1,7 +1,5 @@
 #!/bin/sh
 
-gcc -o device device.c
-gcc -pthread -o controller controller.c
-
-gcc -pthread -lmosquitto -o pub mqtt_pub.c
-gcc -pthread -lmosquitto -o sub mqtt_sub.c
+gcc -g -w -pthread -o multicast multicast.c
+gcc -g -w -pthread -lmosquitto -o act actuator.c
+gcc -g -w -pthread -lmosquitto -o sen sensor.c
